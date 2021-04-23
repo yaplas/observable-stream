@@ -1,0 +1,23 @@
+{
+  "name": "observable-stream",
+  "version": "1.0.0",
+  "description": "make a stream observable without losing back-pressure control",
+  "main": "./lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc -p tsconfig.json",
+    "prepublish": "npm run tsc"
+  },
+  "keywords": [
+    "streams",
+    "observable",
+    "rxjs"
+  ],
+  "author": "Agustin Lascialandare",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^14.14.41",
+    "rxjs": "^6.6.7",
+    "typescript": "^4.2.4"
+  }
+}
