@@ -1,16 +1,17 @@
-import { Transform } from "stream";
+import { Readable, Transform } from "stream";
 import { OperatorFunction, pipe } from "rxjs";
-import createTransformation from '../transformations/controlled';
-import createUncontrolledTransformation from '../transformations/uncontrolled';
+import createTransformation from "../transformations/controlled";
+import createUncontrolledTransformation from "../transformations/uncontrolled";
 
-const pipeArray = (
-  [operation1, operation2, ...rest]: OperatorFunction<any, any>[]
-): OperatorFunction<any, any> => {
+const pipeArray = ([operation1, operation2, ...rest]: OperatorFunction<
+  unknown,
+  unknown
+>[]): OperatorFunction<unknown, unknown> => {
   if (operation2) {
     return pipeArray([pipe(operation1, operation2), ...rest]);
   }
   return operation1;
-}
+};
 
 const pipeStreams = (stream1?: Transform, stream2?: Transform): Transform => {
   if (stream1 !== undefined && stream2 !== undefined) {
@@ -25,35 +26,46 @@ const pipeStreams = (stream1?: Transform, stream2?: Transform): Transform => {
     return stream2;
   }
 
-  throw new Error('Unexpected both streams undefined');
-}
+  throw new Error("Unexpected both streams undefined");
+};
 
 const streamFromOperations = (
-  streamCreator: (operation: OperatorFunction<any, any>) => Transform,
-  operations: OperatorFunction<any, any>[],
+  streamCreator: (operation: OperatorFunction<unknown, unknown>) => Transform,
+  operations: OperatorFunction<unknown, unknown>[]
 ): Transform | undefined =>
-  operations.length > 0 
-    ? streamCreator(pipeArray(operations))
-    : undefined;
+  operations.length > 0 ? streamCreator(pipeArray(operations)) : undefined;
 
-export default (...operations: (OperatorFunction<any, any> | OperatorFunction<any, any>[])[]) => {
+export default (
+  ...operations: (
+    | OperatorFunction<unknown, unknown>
+    | OperatorFunction<unknown, unknown>[]
+  )[]
+): Readable => {
   const { stream, controlled } = operations.reduce(
-    (result, item) => item instanceof Array
-      ? {
-        stream: pipeStreams(
-          result.stream,
-          pipeStreams(
-            streamFromOperations(createTransformation, result.controlled),
-            streamFromOperations(createUncontrolledTransformation, item)
-          )
-        ),
-        controlled: [],
-      } : {
-        stream: result.stream,
-        controlled: [...result.controlled, item]
-      },
-    {controlled:[]} as {stream?: Transform; controlled: OperatorFunction<any, any>[]}
+    (result, item) =>
+      item instanceof Array
+        ? {
+            stream: pipeStreams(
+              result.stream,
+              pipeStreams(
+                streamFromOperations(createTransformation, result.controlled),
+                streamFromOperations(createUncontrolledTransformation, item)
+              )
+            ),
+            controlled: [],
+          }
+        : {
+            stream: result.stream,
+            controlled: [...result.controlled, item],
+          },
+    { controlled: [] } as {
+      stream?: Transform;
+      controlled: OperatorFunction<unknown, unknown>[];
+    }
   );
-  
-  return pipeStreams(stream, streamFromOperations(createTransformation, controlled));
-}
+
+  return pipeStreams(
+    stream,
+    streamFromOperations(createTransformation, controlled)
+  );
+};

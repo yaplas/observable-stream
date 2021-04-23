@@ -1,16 +1,20 @@
 import { OperatorFunction, Subject } from "rxjs";
 import { Transform } from "stream";
 
-export default <T = unknown, R = unknown>(operation: OperatorFunction<T, R>) => {
+export default <T = unknown, R = unknown>(
+  operation: OperatorFunction<T, R>
+): Transform => {
   const subject = new Subject<T>();
-  let push:Function;
-  subject.pipe(operation).subscribe({next: (item: R) => {
-    if (push instanceof Function) {
-       push(item);
-    }   else {
-        throw new Error('Unexpected early push');
-    }
-  }});
+  let push: (item: R) => void;
+  subject.pipe(operation).subscribe({
+    next: (item: R) => {
+      if (push instanceof Function) {
+        push(item);
+      } else {
+        throw new Error("Unexpected early push");
+      }
+    },
+  });
 
   return new Transform({
     objectMode: true,
@@ -26,4 +30,4 @@ export default <T = unknown, R = unknown>(operation: OperatorFunction<T, R>) => 
       callback();
     },
   });
-}
+};
