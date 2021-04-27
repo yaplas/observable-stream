@@ -20,26 +20,36 @@ Yarn:
 import { controlledPipe } from "observable-stream";
 
 controlledPipe(
-  // readable stream as source  
+  // Readable stream as source  
   sourceStream,
-  // here goes the rxjs operations
-  // you can do any async operation with no worries about back-pressure
-  // your process memory will be fine because async operation will be executed
+  // Here goes the rxjs operations.
+  // You can do any async operation with no worries about back-pressure,
+  // your process memory will be fine because this operations will be executed
   // in a controlled way: the whole stream will be split in observables
-  // of N items and then piped to your rxjs operations, once the current observable
-  // completes then the next one will be processed, this way of processing ensure
-  // that the source stream will be paused if it is necessary
+  // of N items and then pipe it to your controlled operations. Then the process
+  // subscribes to the observable returned by your operation pipe, and wait for the completion,
+  // once the result observable completes the next N items observable will be processed,
+  // this way of processing ensure that the source stream will be paused if it is necessary
   concatMap(someAsyncTask),
   // uncontrolled areas are defined by brackets: [ here goes uncontrolled operations ]
   // given the way to process the controlled operations is by building
   // observables of N items, aggregation operations like "scan" will be reset
-  // every time an N items observable completes, so you need to put your
-  // aggregations into uncontrolled areas
+  // every time an N items observable completes, so you need to put this
+  // kind of operations into uncontrolled areas, actually aggregations should be
+  // into uncontrolled areas.
   [
-    // aggregation operators goes into the uncontrolled areas
+    // uncontrolled areas will not pause the source stream
+    // so you have to avoid putting async operations here
     scan(someAggregatorFunction)
     // buffer operations are other type of operations that make sense
-    // to put into uncontrolled areas 
+    // to put into uncontrolled areas. Even this could be considered async
+    // because this bufferTime will emits when 100 items is collected or
+    // in 100 ms, but it is kind of auto-controlled operation, because if the
+    // data comes fast the 100 items are filled quickly, and if the data comes
+    // in a slow rate there is no any back-pressure to be worried about.
+    // Notice that if you don't put the bufferTime into uncontrolled area,
+    // you can't get 100 items, you will have N items where N is the size
+    // of the observables build into controlled areas
     bufferTime(100, null, 100);
   ],
   // back-pressure control still working even after uncontrolled areas,
