@@ -18,6 +18,7 @@ Yarn:
 
 ```ts
 import { controlledPipe } from "observable-stream";
+import { concatMap, scan, bufferTime, catchError } from "rxjs/operators";
 
 controlledPipe(
   // Readable stream as source  
@@ -56,6 +57,8 @@ controlledPipe(
   // if the following operation take time to complete the source stream
   // will be paused
   concatMap(someOtherAsyncTask),
+  // you can catch errors all along the pipe even into uncontrolled areas
+  catchError(someErrorHandler)
 ).pipe(
   // controlledPipe returns a readable stream that you can pipe to other one
   outputStream
