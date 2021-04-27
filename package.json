@@ -1,6 +1,6 @@
 {
   "name": "observable-stream",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "make a stream observable without losing back-pressure control",
   "main": "./lib/index.js",
   "scripts": {
