@@ -1,7 +1,9 @@
-import { Readable, Transform } from "stream";
+import { Transform } from "stream";
 import { OperatorFunction, pipe } from "rxjs";
 import createTransformation from "../transformations/controlled";
 import createUncontrolledTransformation from "../transformations/uncontrolled";
+import { PassThrough, Readable } from "stream";
+import { errorWatcher } from "../transformations/error";
 
 const pipeArray = ([operation1, operation2, ...rest]: OperatorFunction<
   unknown,
@@ -13,59 +15,68 @@ const pipeArray = ([operation1, operation2, ...rest]: OperatorFunction<
   return operation1;
 };
 
-const pipeStreams = (stream1?: Transform, stream2?: Transform): Transform => {
-  if (stream1 !== undefined && stream2 !== undefined) {
-    return stream1.pipe(stream2);
-  }
-
-  if (stream1 !== undefined) {
-    return stream1;
-  }
-
-  if (stream2 !== undefined) {
-    return stream2;
-  }
-
-  throw new Error("Unexpected both streams undefined");
-};
-
 const streamFromOperations = (
   streamCreator: (operation: OperatorFunction<unknown, unknown>) => Transform,
   operations: OperatorFunction<unknown, unknown>[]
-): Transform | undefined =>
-  operations.length > 0 ? streamCreator(pipeArray(operations)) : undefined;
+): Transform =>
+  operations.length > 0
+    ? streamCreator(pipeArray(operations))
+    : new PassThrough();
 
-export default (
+type OperationArray<T, R> =
+  | [OperatorFunction<T, R>]
+  | [
+      OperatorFunction<T, any>,
+      ...OperatorFunction<any, any>[],
+      OperatorFunction<any, R>
+    ];
+
+type Operations<T, R> =
+  | [OperatorFunction<T, R> | OperationArray<R, T>]
+  | [
+      OperatorFunction<T, any> | OperationArray<R, any>,
+      ...(OperatorFunction<any, any> | OperationArray<any, any>)[],
+      OperatorFunction<any, R> | OperationArray<any, R>
+    ];
+
+function controlledPipe<T = unknown, R = unknown>(
+  source: Readable,
+  ...operations: Operations<T, R>
+): Transform;
+
+function controlledPipe(
+  source: Readable,
   ...operations: (
     | OperatorFunction<unknown, unknown>
     | OperatorFunction<unknown, unknown>[]
   )[]
-): Readable => {
-  const { stream, controlled } = operations.reduce(
-    (result, item) =>
+): Readable {
+  const { streams, controlled } = operations.reduce(
+    (acc, item) =>
       item instanceof Array
         ? {
-            stream: pipeStreams(
-              result.stream,
-              pipeStreams(
-                streamFromOperations(createTransformation, result.controlled),
-                streamFromOperations(createUncontrolledTransformation, item)
-              )
-            ),
+            streams: [
+              ...acc.streams,
+              streamFromOperations(createTransformation, acc.controlled),
+              streamFromOperations(createUncontrolledTransformation, item),
+            ],
             controlled: [],
           }
         : {
-            stream: result.stream,
-            controlled: [...result.controlled, item],
+            ...acc,
+            controlled: [...acc.controlled, item],
           },
-    { controlled: [] } as {
-      stream?: Transform;
+    { controlled: [], streams: [] } as {
+      streams: Transform[];
       controlled: OperatorFunction<unknown, unknown>[];
     }
   );
 
-  return pipeStreams(
-    stream,
-    streamFromOperations(createTransformation, controlled)
-  );
-};
+  return [
+    ...streams,
+    streamFromOperations(createTransformation, controlled),
+    createTransformation(errorWatcher),
+  ].reduce((result, stream) => result.pipe(stream), source);
+}
+
+export default controlledPipe;

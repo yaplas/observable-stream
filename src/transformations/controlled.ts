@@ -1,42 +1,48 @@
 import { Transform } from "stream";
-import { from, OperatorFunction } from "rxjs";
+import { from, OperatorFunction, pipe } from "rxjs";
+import { TransformationError, errorWatcher } from "./error";
 
 const defaultOptions = {
   highWaterMark: 16,
 };
 
 export default <T = unknown, R = unknown>(
-  process: OperatorFunction<T, R>,
+  operation: OperatorFunction<T, R>,
   options = defaultOptions
 ): Transform => {
   const transformOptions = { ...defaultOptions, ...options };
   const buffer: T[] = [];
   const flushBuffer = (
     callback: (err?: Error) => void,
-    push: (item: R) => void
+    push: (item: R | TransformationError) => void
   ) => {
-    process(from(buffer.slice())).subscribe({
-      next: (item) => push(item),
-      complete: () => callback(),
-      error: (err) => callback(err),
-    });
+    from(buffer.slice())
+      .pipe(pipe(errorWatcher, operation))
+      .subscribe({
+        next: (item) => push(item),
+        complete: () => callback(),
+        error: (error) => {
+          push(new TransformationError(error));
+          callback();
+        },
+      });
     buffer.splice(0);
   };
 
   return new Transform({
     highWaterMark: transformOptions.highWaterMark,
     objectMode: true,
-    transform(chunk, encoding, callback) {
-      buffer.push(chunk);
+    transform(item, encoding, callback) {
+      buffer.push(item);
 
       if (buffer.length < options.highWaterMark) {
         callback();
       } else {
-        flushBuffer(callback, (item: R) => this.push(item));
+        flushBuffer(callback, (item) => this.push(item));
       }
     },
     flush(callback) {
-      flushBuffer(callback, (item: R) => this.push(item));
+      flushBuffer(callback, (item) => this.push(item));
     },
   });
 };

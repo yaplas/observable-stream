@@ -1,26 +1,22 @@
-import { OperatorFunction, Subject } from "rxjs";
+import { OperatorFunction, pipe, Subject } from "rxjs";
 import { Transform } from "stream";
+import { TransformationError, errorWatcher } from "./error";
 
-export default <T = unknown, R = unknown>(
+const createUncontrolledTransformation = <T = unknown, R = unknown>(
   operation: OperatorFunction<T, R>
 ): Transform => {
   const subject = new Subject<T>();
-  let push: (item: R) => void;
-  subject.pipe(operation).subscribe({
-    next: (item: R) => {
-      if (push instanceof Function) {
-        push(item);
-      } else {
-        throw new Error("Unexpected early push");
-      }
-    },
+  let push: (item: R | TransformationError) => void;
+  subject.pipe(pipe(errorWatcher, operation)).subscribe({
+    next: (item: R) => push(item),
+    error: (error) => push(new TransformationError(error)),
   });
 
   return new Transform({
     objectMode: true,
     transform(item, encoding, callback) {
-      if (!push) {
-        push = (item: R) => this.push(item);
+      if (push === undefined) {
+        push = (item) => this.push(item);
       }
       subject.next(item);
       callback();
@@ -31,3 +27,5 @@ export default <T = unknown, R = unknown>(
     },
   });
 };
+
+export default createUncontrolledTransformation;

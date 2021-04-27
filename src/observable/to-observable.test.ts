@@ -13,4 +13,22 @@ describe("toObservable", () => {
       },
     });
   });
+  test("consuming items until failure", (done) => {
+    const pushed = jest
+      .fn()
+      .mockImplementationOnce((item) => item)
+      .mockImplementationOnce((item) => {
+        throw new Error(`failure on item ${item}`);
+      });
+    const source = createReadableCounter(100, pushed);
+    const next = jest.fn();
+    toObservable(source).subscribe({
+      next,
+      error: (error) => {
+        expect(next).toHaveBeenCalledTimes(2);
+        expect(error.message).toEqual("failure on item 2");
+        done();
+      },
+    });
+  });
 });

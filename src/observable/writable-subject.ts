@@ -1,7 +1,7 @@
 import { Writable } from "stream";
 import { Subject } from "rxjs";
 
-export default <T = unknown>(subject: Subject<T>): Writable =>
+const createWritableSubject = <T = unknown>(subject: Subject<T>): Writable =>
   new Writable({
     objectMode: true,
     final() {
@@ -12,3 +12,5 @@ export default <T = unknown>(subject: Subject<T>): Writable =>
       callback();
     },
   });
+
+export default createWritableSubject;
