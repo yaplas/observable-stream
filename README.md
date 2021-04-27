@@ -16,7 +16,7 @@ Yarn:
 
 ###  controlledPipe
 
-ts```
+```ts
 import { controlledPipe } from "observable-stream";
 
 controlledPipe(
@@ -64,7 +64,7 @@ controlledPipe(
 
 ### toObservable
 
-ts```
+```ts
 import { toObservable } from "observable-stream";
 // controlledPipe returns an stream to be able to continue piping streams, but you can
 // also convert the stream to an observable if you need a promise or to wait for completion.
