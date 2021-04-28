@@ -61,7 +61,7 @@ controlledPipe(
     // that make sense to put into uncontrolled areas.
     // Notice that if you don't put buffers operations
     // into uncontrolled area you won't get the total
-    // amount of items you setup if that amount is less than N,
+    // amount of items you setup if that amount is more than N,
     // where N is the amount of items per observable builded
     // into controlled areas
     bufferTime(100, null, 100);
@@ -72,8 +72,8 @@ controlledPipe(
   // will be paused
   concatMap(someAsyncTaskAfterUncontrolledArea),
   concatMap(someOtherAsyncTask),
-  // you can catch errors all along the pipe even
-  // into uncontrolled areas
+  // you can catch errors ocurred all along the pipe
+  // even into uncontrolled areas
   catchError(someErrorHandler)
 ).pipe(
   // controlledPipe returns a readable stream
