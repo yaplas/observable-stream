@@ -35,6 +35,8 @@ controlledPipe(
   // once the result observable completes the next N items observable will be processed,
   // this way of processing ensure that the source stream will be paused if it is necessary
   concatMap(someAsyncTask),
+  concatMap(someOtherAsyncTask),
+  concatMap(someMoreAsyncStuff),
   // uncontrolled areas are defined by brackets: [ here goes uncontrolled operations ]
   // given the way to process the controlled operations is by building
   // observables of N items, aggregation operations like "scan" will be reset
@@ -55,6 +57,7 @@ controlledPipe(
   // back-pressure control still working even after uncontrolled areas,
   // if the following operation take time to complete the source stream
   // will be paused
+  concatMap(someAsyncTaskAfterUncontrolledArea),
   concatMap(someOtherAsyncTask),
   // you can catch errors all along the pipe even into uncontrolled areas
   catchError(someErrorHandler)
