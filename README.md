@@ -43,14 +43,10 @@ controlledPipe(
     // so you have to avoid putting async operations here
     scan(someAggregatorFunction)
     // buffer operations are other type of operations that make sense
-    // to put into uncontrolled areas. Even this could be considered async
-    // because this bufferTime will emits when 100 items is collected or
-    // in 100 ms, but it is kind of auto-controlled operation, because if the
-    // data comes fast the 100 items are filled quickly, and if the data comes
-    // in a slow rate there is no any back-pressure to be worried about.
-    // Notice that if you don't put the bufferTime into uncontrolled area,
-    // you can't get 100 items, you will have N items where N is the size
-    // of the observables build into controlled areas
+    // to put into uncontrolled areas. Notice that if you don't put
+    // buffers operations into uncontrolled area you won't get the total
+    // amount of items you setup if that amount is less than N, where N is
+    // the amount of items per observable builded into controlled areas
     bufferTime(100, null, 100);
   ],
   // back-pressure control still working even after uncontrolled areas,
@@ -68,12 +64,13 @@ controlledPipe(
 ### toObservable
 
 ```ts
-import { toObservable } from "observable-stream";
+import { toObservable, controlledPipe } from "observable-stream";
 // controlledPipe returns an stream to be able to continue piping streams, but you can
-// also convert the stream to an observable if you need a promise or to wait for completion.
-// Is it not necessary to toObservable to process stream data with rxjs operators, controlledPipe
-// build observables for you and control the process.
-// toObservable is applicable directly to streams but in that case all the operations to what you
-// eventually can pipe the observable will be executed with no back-pressure control.
+// also convert the stream to an observable if you need a promise or to wait for completion,
+// or you want to return an observable for final sync operations or logging.
+// Is it not necessary use toObservable to be able to process stream data with rxjs operators,
+// as we saw previously controlledPipe build observables for you and control the process.
+// toObservable is applicable directly to any readable streams, but you have to take account that
+// there is no more back-pressure control for returned observable subscripted operations
 await toObservable(controlledPipe(sourceStream, ... your operations ...)).toPromise();
 ```
