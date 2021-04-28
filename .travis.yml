@@ -3,5 +3,8 @@ node_js:
   - "12"
 script:
   - npm i
+  - npm install codecov -g
   - npm run tsc
   - npm t -- --collect-coverage
+after_success:
+  - codecov
