@@ -1,8 +1,12 @@
 {
   "name": "observable-stream",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "make a stream observable without losing back-pressure control",
   "main": "./lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yaplas/observable-stream.git"
+  },
   "scripts": {
     "test": "jest",
     "tsc": "tsc -p tsconfig.json",
