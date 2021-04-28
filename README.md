@@ -1,6 +1,7 @@
 # Observable Stream
 
  ![Travis (.org)](https://img.shields.io/travis/yaplas/observable-stream)
+ ![Codecov](https://img.shields.io/codecov/c/github/yaplas/observable-stream)
 
 Make a stream observable without losing back-pressure control.
 
