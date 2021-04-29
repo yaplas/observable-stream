@@ -7,7 +7,7 @@ const defaultOptions = {
 };
 
 export default <T = unknown, R = unknown>(
-  operation: OperatorFunction<T, R>,
+  operation?: OperatorFunction<T, R>,
   options = defaultOptions
 ): Transform => {
   const transformOptions = { ...defaultOptions, ...options };
@@ -17,7 +17,7 @@ export default <T = unknown, R = unknown>(
     push: (item: R | TransformationError) => void
   ) => {
     from(buffer.slice())
-      .pipe(pipe(errorWatcher, operation))
+      .pipe(operation ? pipe(errorWatcher, operation) : errorWatcher)
       .subscribe({
         next: (item) => push(item),
         complete: () => callback(),

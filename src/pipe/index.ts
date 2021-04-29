@@ -3,7 +3,6 @@ import { OperatorFunction, pipe } from "rxjs";
 import createTransformation from "../transformations/controlled";
 import createUncontrolledTransformation from "../transformations/uncontrolled";
 import { PassThrough, Readable } from "stream";
-import { errorWatcher } from "../transformations/error";
 
 const pipeArray = ([operation1, operation2, ...rest]: OperatorFunction<
   unknown,
@@ -75,7 +74,7 @@ function controlledPipe(
   return [
     ...streams,
     streamFromOperations(createTransformation, controlled),
-    createTransformation(errorWatcher),
+    createTransformation(),
   ].reduce((result, stream) => result.pipe(stream), source);
 }
 
