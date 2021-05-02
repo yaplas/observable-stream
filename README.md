@@ -102,3 +102,10 @@ import { toObservable, controlledPipe } from "observable-stream";
 // observable subscripted operations
 await toObservable(controlledPipe(sourceStream, ... your operations ...)).toPromise();
 ```
+### Working Example
+
+In this example you can see how the slow async task at the end of the pipe slows down the data generation, source stream prints `pushing ... N` on the screen and the output stream prints `output [N, 2N, 1 + 2 + ... + N]`.
+
+https://codesandbox.io/s/goofy-easley-wo95q
+
+Note: This work is being improved, better examples coming soon.
