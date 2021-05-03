@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 import { Readable } from "stream";
 
-const createReadableSubject = (
+export function createReadableCounter(
   limit = 1000,
   pushed?: (item: unknown) => void
-): Readable => {
+): Readable {
   let count = 1;
   return new Readable({
     objectMode: true,
@@ -21,6 +21,4 @@ const createReadableSubject = (
       count++;
     },
   });
-};
-
-export default createReadableSubject;
+}

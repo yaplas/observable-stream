@@ -1,5 +1,5 @@
-import toObservable from ".";
-import createReadableCounter from "../streams/readable-counter";
+import { toObservable } from "../.";
+import { createReadableCounter } from "../streams/readable-counter";
 
 describe("toObservable", () => {
   test("consuming all items", (done) => {

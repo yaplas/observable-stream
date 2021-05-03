@@ -109,30 +109,30 @@ type UnaryFunctionTuple<
       UnaryFunction<I, R>
     ];
 
-function controlledPipe<A>(
+export function controlledPipe<A>(
   source: Readable,
   fnA: UnaryFunction<A, A> | UnaryFunctionTuple<A, A>
 ): Transform;
 
-function controlledPipe<A, B>(
+export function controlledPipe<A, B>(
   source: Readable,
   fnA: UnaryFunction<A, B> | UnaryFunctionTuple<A, B>
 ): Transform;
 
-function controlledPipe<A, B, C>(
+export function controlledPipe<A, B, C>(
   source: Readable,
   fnA: UnaryFunction<A, B> | UnaryFunctionTuple<A, B>,
   fnB: UnaryFunction<B, C> | UnaryFunctionTuple<B, C>
 ): Transform;
 
-function controlledPipe<A, B, C, D>(
+export function controlledPipe<A, B, C, D>(
   source: Readable,
   fnA: UnaryFunction<A, B> | UnaryFunctionTuple<A, B>,
   fnB: UnaryFunction<B, C> | UnaryFunctionTuple<B, C>,
   fnC: UnaryFunction<C, D> | UnaryFunctionTuple<C, D>
 ): Transform;
 
-function controlledPipe<A, B, C, D, E>(
+export function controlledPipe<A, B, C, D, E>(
   source: Readable,
   fnA: UnaryFunction<A, B> | UnaryFunctionTuple<A, B>,
   fnB: UnaryFunction<B, C> | UnaryFunctionTuple<B, C>,
@@ -140,7 +140,7 @@ function controlledPipe<A, B, C, D, E>(
   fnD: UnaryFunction<D, E> | UnaryFunctionTuple<D, E>
 ): Transform;
 
-function controlledPipe<A, B, C, D, E, F>(
+export function controlledPipe<A, B, C, D, E, F>(
   source: Readable,
   fnA: UnaryFunction<A, B> | UnaryFunctionTuple<A, B>,
   fnB: UnaryFunction<B, C> | UnaryFunctionTuple<B, C>,
@@ -149,7 +149,7 @@ function controlledPipe<A, B, C, D, E, F>(
   fnE: UnaryFunction<E, F> | UnaryFunctionTuple<E, F>
 ): Transform;
 
-function controlledPipe<A, B, C, D, E, F, G>(
+export function controlledPipe<A, B, C, D, E, F, G>(
   source: Readable,
   fnA: UnaryFunction<A, B> | UnaryFunctionTuple<A, B>,
   fnB: UnaryFunction<B, C> | UnaryFunctionTuple<B, C>,
@@ -159,7 +159,7 @@ function controlledPipe<A, B, C, D, E, F, G>(
   fnF: UnaryFunction<F, G> | UnaryFunctionTuple<F, G>
 ): Transform;
 
-function controlledPipe<A, B, C, D, E, F, G, H>(
+export function controlledPipe<A, B, C, D, E, F, G, H>(
   source: Readable,
   fnA: UnaryFunction<A, B> | UnaryFunctionTuple<A, B>,
   fnB: UnaryFunction<B, C> | UnaryFunctionTuple<B, C>,
@@ -170,7 +170,7 @@ function controlledPipe<A, B, C, D, E, F, G, H>(
   fnG: UnaryFunction<G, H> | UnaryFunctionTuple<G, H>
 ): Transform;
 
-function controlledPipe<A, B, C, D, E, F, G, H, I>(
+export function controlledPipe<A, B, C, D, E, F, G, H, I>(
   source: Readable,
   fnA: UnaryFunction<A, B> | UnaryFunctionTuple<A, B>,
   fnB: UnaryFunction<B, C> | UnaryFunctionTuple<B, C>,
@@ -182,7 +182,7 @@ function controlledPipe<A, B, C, D, E, F, G, H, I>(
   fnH: UnaryFunction<H, I> | UnaryFunctionTuple<H, I>
 ): Transform;
 
-function controlledPipe<A, B, C, D, E, F, G, H, I, J>(
+export function controlledPipe<A, B, C, D, E, F, G, H, I, J>(
   source: Readable,
   fnA: UnaryFunction<A, B> | UnaryFunctionTuple<A, B>,
   fnB: UnaryFunction<B, C> | UnaryFunctionTuple<B, C>,
@@ -195,7 +195,7 @@ function controlledPipe<A, B, C, D, E, F, G, H, I, J>(
   fnI: UnaryFunction<I, J> | UnaryFunctionTuple<I, J>
 ): Transform;
 
-function controlledPipe<A, B, C, D, E, F, G, H, I, J, K>(
+export function controlledPipe<A, B, C, D, E, F, G, H, I, J, K>(
   source: Readable,
   fnA: UnaryFunction<A, B> | UnaryFunctionTuple<A, B>,
   fnB: UnaryFunction<B, C> | UnaryFunctionTuple<B, C>,
@@ -209,7 +209,7 @@ function controlledPipe<A, B, C, D, E, F, G, H, I, J, K>(
   fnJ: UnaryFunction<J, K> | UnaryFunctionTuple<J, K>
 ): Transform;
 
-function controlledPipe(
+export function controlledPipe(
   source: Readable,
   ...operations: (
     | UnaryFunction<unknown, unknown>
@@ -243,5 +243,3 @@ function controlledPipe(
     createTransformation(),
   ].reduce((result, stream) => result.pipe(stream), source);
 }
-
-export default controlledPipe;

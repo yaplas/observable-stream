@@ -1,4 +1,4 @@
-import createReadableCounter from "../streams/readable-counter";
+import { createReadableCounter } from "../streams/readable-counter";
 import { controlledPipe, toObservable } from "../.";
 import { catchError, concatMap, map, scan } from "rxjs/operators";
 import { of, Subject } from "rxjs";
