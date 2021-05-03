@@ -51,7 +51,7 @@ describe("controlledPipe", () => {
     toObservable(
       controlledPipe(
         source,
-        concatMap((item) => of(item)),
+        concatMap((item: number) => of(item)),
         [scan((acc, item) => item + acc, 0), map((item) => `hey ${item}`)],
         concatMap((item) => {
           if (item === "hey 1") {
@@ -80,12 +80,12 @@ describe("controlledPipe", () => {
   test("back-pressure control having uncontrolled area at the end of the pipe", (done) => {
     const pushed = jest.fn();
     const source = createReadableCounter(200, pushed);
-    const stopper = new Subject();
+    const stopper = new Subject<number>();
     toObservable(
       controlledPipe(
         source,
         concatMap((item) => {
-          if (item === "hey 1") {
+          if (item === 1) {
             setTimeout(() => {
               // if the last count (200) was not pushed
               // means readable counter stop emitting
