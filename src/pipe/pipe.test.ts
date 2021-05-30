@@ -46,7 +46,7 @@ describe("controlledPipe", () => {
   });
   test("back-pressure control pass through uncontrolled areas", (done) => {
     const pushed = jest.fn();
-    const source = createReadableCounter(200, pushed);
+    const source = createReadableCounter(2000, pushed);
     const stopper = new Subject();
     toObservable(
       controlledPipe(
@@ -56,11 +56,11 @@ describe("controlledPipe", () => {
         concatMap((item) => {
           if (item === "hey 1") {
             setTimeout(() => {
-              // if the last count (200) was not pushed
+              // if the last count (2000) was not pushed
               // means readable counter stop emitting
               // so back-pressure control works even across
               // uncontrolled areas
-              expect(pushed).not.toHaveBeenCalledWith(200);
+              expect(pushed).not.toHaveBeenCalledWith(2000);
               stopper.next(1);
               stopper.complete();
             }, 500);
@@ -71,15 +71,15 @@ describe("controlledPipe", () => {
       )
     ).subscribe({
       complete: () => {
-        expect(pushed).toHaveBeenCalledWith(200);
-        expect(pushed).toHaveBeenCalledTimes(201);
+        expect(pushed).toHaveBeenCalledWith(2000);
+        expect(pushed).toHaveBeenCalledTimes(2001);
         done();
       },
     });
   });
   test("back-pressure control having uncontrolled area at the end of the pipe", (done) => {
     const pushed = jest.fn();
-    const source = createReadableCounter(200, pushed);
+    const source = createReadableCounter(2000, pushed);
     const stopper = new Subject<number>();
     toObservable(
       controlledPipe(
@@ -91,7 +91,7 @@ describe("controlledPipe", () => {
               // means readable counter stop emitting
               // so back-pressure control works even across
               // uncontrolled areas
-              expect(pushed).not.toHaveBeenCalledWith(200);
+              expect(pushed).not.toHaveBeenCalledWith(2000);
               stopper.next(1);
               stopper.complete();
             }, 500);
@@ -103,8 +103,8 @@ describe("controlledPipe", () => {
       )
     ).subscribe({
       complete: () => {
-        expect(pushed).toHaveBeenCalledWith(200);
-        expect(pushed).toHaveBeenCalledTimes(201);
+        expect(pushed).toHaveBeenCalledWith(2000);
+        expect(pushed).toHaveBeenCalledTimes(2001);
         done();
       },
     });

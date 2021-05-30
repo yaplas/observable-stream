@@ -30,12 +30,12 @@ export default <T = unknown, R = unknown>(
   };
 
   return new Transform({
-    highWaterMark: transformOptions.highWaterMark,
+    highWaterMark: transformOptions.highWaterMark * 4,
     objectMode: true,
     transform(item, encoding, callback) {
       buffer.push(item);
 
-      if (buffer.length < options.highWaterMark) {
+      if (buffer.length < transformOptions.highWaterMark) {
         callback();
       } else {
         flushBuffer(callback, (item) => this.push(item));
