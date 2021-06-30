@@ -3,7 +3,7 @@ import { from, OperatorFunction, pipe } from "rxjs";
 import { TransformationError, errorWatcher } from "./error";
 
 const defaultOptions = {
-  highWaterMark: 16,
+  highWaterMark: 64,
 };
 
 export default <T = unknown, R = unknown>(
@@ -30,7 +30,7 @@ export default <T = unknown, R = unknown>(
   };
 
   return new Transform({
-    highWaterMark: transformOptions.highWaterMark * 8,
+    highWaterMark: transformOptions.highWaterMark * 4,
     objectMode: true,
     transform(item, encoding, callback) {
       buffer.push(item);
