@@ -30,7 +30,7 @@ export default <T = unknown, R = unknown>(
   };
 
   return new Transform({
-    highWaterMark: transformOptions.highWaterMark * 4,
+    highWaterMark: transformOptions.highWaterMark * 8,
     objectMode: true,
     transform(item, encoding, callback) {
       buffer.push(item);
