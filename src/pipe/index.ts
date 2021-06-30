@@ -21,7 +21,7 @@ const streamFromOperations = (
 ): Transform =>
   operations.length > 0
     ? streamCreator(pipeArray(operations) as OperatorFunction<unknown, unknown>)
-    : new PassThrough();
+    : new PassThrough({ objectMode: true });
 
 type UnaryFunctionTuple<
   T,
