@@ -22,6 +22,9 @@ const createUncontrolledTransformation = <T = unknown, R = unknown>(
       callback();
     },
     flush(callback) {
+      if (push === undefined) {
+        push = (item) => this.push(item);
+      }
       subject.complete();
       callback();
     },
